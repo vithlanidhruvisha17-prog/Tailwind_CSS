@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorials - CyberShield Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0b0b0b; }
+        ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 10px; }
+    </style>
+    <script>
+        // 1. Instant Security Check (Redirects if not logged in)
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+        </script>
+</head>
+<body class="bg-[#0b0b0b] text-white font-sans selection:bg-[#FFD700] selection:text-black">
+
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 md:px-20 py-6 transition-all duration-300 ease-in-out">
+    <div class="flex items-center gap-2 group cursor-pointer">
+        <div class="w-8 h-8 bg-[#FFD700] rounded-lg flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,215,0,0.3)]">C</div>
+        <span class="text-[#FFD700] text-2xl font-black tracking-tighter uppercase group-hover:tracking-normal transition-all">CyberShield Hub</span>
+    </div>
+
+    <ul class="hidden md:flex items-center space-x-10">
+        <li><a href="index.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Home</a></li>
+        <li><a href="report.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Posts</a></li>
+        <li><a href="tutorial.html" class="text-[#FFD700] text-xs font-bold uppercase tracking-widest relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-[#FFD700]">Tutorial</a></li>
+        <li><a href="live.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Live</a></li>
+        <li><a href="about.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">About</a></li>
+    </ul>
+
+    <div class="flex items-center gap-4"> 
+    <a href="profile.html" class="flex items-center gap-3 border-2 border-yellow-400 rounded-full p-0.5">
+        <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-yellow-400">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </a>
+</div>
+</nav>
+
+    <header class="pt-48 pb-24 px-10 md:px-20 text-center bg-gradient-to-b from-[#0b0b0b] to-[#121212]">
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none mb-6">
+            MASTER <span class="text-[#FFD700]">CYBER</span> <br> DEFENSE
+        </h1>
+        <p class="text-gray-500 max-w-xl mx-auto text-lg mb-10">
+            Premium Video Tutorials for Proactive Security and Advanced Learning.
+        </p>
+        <div class="w-10 h-10 border-2 border-white/10 rounded-full flex items-center justify-center mx-auto animate-bounce mt-10">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7-7-7"></path></svg>
+        </div>
+    </header>
+
+    <main class="px-8 md:px-20 grid grid-cols-1 md:grid-cols-3 gap-10 pb-20">
+    <div class="bg-[#161616] rounded-[35px] border border-white/5 overflow-hidden group hover:border-[#FFD700]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all duration-500">
+        <div class="relative h-52 bg-[#1a1a1a] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#161616] to-transparent z-10"></div>
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="Tutorial">
+            <div class="absolute inset-0 flex items-center justify-center z-20">
+                <div class="w-14 h-14 bg-[#FFD700] rounded-full flex items-center justify-center text-black shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300">
+                    <i class="fa-solid fa-play ml-1"></i>
+                </div>
+            </div>
+            <span class="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md text-[10px] font-bold px-3 py-1 rounded-lg border border-white/10 uppercase tracking-tighter">15 Min</span>
+        </div>
+
+        <div class="p-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-[9px] text-[#FFD700] font-black uppercase bg-[#FFD700]/10 px-3 py-1 rounded-full tracking-widest border border-[#FFD700]/20">Ethical Hacking</span>
+                <span class="text-[9px] text-gray-400 font-black uppercase bg-white/5 px-3 py-1 rounded-full tracking-widest">Beginner</span>
+            </div>
+            <h3 class="text-2xl font-black mt-2 mb-3 leading-tight group-hover:text-[#FFD700] transition-colors">Network Security 101</h3>
+            <p class="text-gray-500 text-sm mb-8 line-clamp-2">Learn how to secure enterprise networks from external threats and zero-day vulnerabilities.</p>
+            <button class="w-full py-4 bg-white/5 border border-white/5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#FFD700] hover:text-black transition-all duration-300">
+                Start Learning
+            </button>
+        </div>
+    </div>
+
+      <div class="bg-[#161616] rounded-[35px] border border-white/5 overflow-hidden group hover:border-[#FFD700]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all duration-500">
+        <div class="relative h-52 bg-[#1a1a1a] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#161616] to-transparent z-10"></div>
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="Tutorial">
+            <div class="absolute inset-0 flex items-center justify-center z-20">
+                <div class="w-14 h-14 bg-[#FFD700] rounded-full flex items-center justify-center text-black shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300">
+                    <i class="fa-solid fa-play ml-1"></i>
+                </div>
+            </div>
+            <span class="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md text-[10px] font-bold px-3 py-1 rounded-lg border border-white/10 uppercase tracking-tighter">15 Min</span>
+        </div>
+
+        <div class="p-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-[9px] text-[#FFD700] font-black uppercase bg-[#FFD700]/10 px-3 py-1 rounded-full tracking-widest border border-[#FFD700]/20">Ethical Hacking</span>
+                <span class="text-[9px] text-gray-400 font-black uppercase bg-white/5 px-3 py-1 rounded-full tracking-widest">Beginner</span>
+            </div>
+            <h3 class="text-2xl font-black mt-2 mb-3 leading-tight group-hover:text-[#FFD700] transition-colors">Network Security 101</h3>
+            <p class="text-gray-500 text-sm mb-8 line-clamp-2">Learn how to secure enterprise networks from external threats and zero-day vulnerabilities.</p>
+            <button class="w-full py-4 bg-white/5 border border-white/5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#FFD700] hover:text-black transition-all duration-300">
+                Start Learning
+            </button>
+        </div>
+    </div>
+
+      <div class="bg-[#161616] rounded-[35px] border border-white/5 overflow-hidden group hover:border-[#FFD700]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all duration-500">
+        <div class="relative h-52 bg-[#1a1a1a] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#161616] to-transparent z-10"></div>
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800" class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="Tutorial">
+            <div class="absolute inset-0 flex items-center justify-center z-20">
+                <div class="w-14 h-14 bg-[#FFD700] rounded-full flex items-center justify-center text-black shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300">
+                    <i class="fa-solid fa-play ml-1"></i>
+                </div>
+            </div>
+            <span class="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md text-[10px] font-bold px-3 py-1 rounded-lg border border-white/10 uppercase tracking-tighter">15 Min</span>
+        </div>
+
+        <div class="p-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-[9px] text-[#FFD700] font-black uppercase bg-[#FFD700]/10 px-3 py-1 rounded-full tracking-widest border border-[#FFD700]/20">Ethical Hacking</span>
+                <span class="text-[9px] text-gray-400 font-black uppercase bg-white/5 px-3 py-1 rounded-full tracking-widest">Beginner</span>
+            </div>
+            <h3 class="text-2xl font-black mt-2 mb-3 leading-tight group-hover:text-[#FFD700] transition-colors">Network Security 101</h3>
+            <p class="text-gray-500 text-sm mb-8 line-clamp-2">Learn how to secure enterprise networks from external threats and zero-day vulnerabilities.</p>
+            <button class="w-full py-4 bg-white/5 border border-white/5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#FFD700] hover:text-black transition-all duration-300">
+                Start Learning
+            </button>
+        </div>
+    </div>
+    </main>
+    <footer class="px-10 md:px-20 py-12 border-t border-white/5 bg-[#0b0b0b]">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-[#FFD700] text-xl font-bold uppercase tracking-tighter">CyberShield Hub</div>
+            <div class="text-gray-500 text-sm">© 2026 All Rights Reserved.</div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-500 hover:text-[#FFD700] transition-colors text-xs font-bold uppercase tracking-widest">Instagram</a>
+                <a href="#" class="text-gray-500 hover:text-[#FFD700] transition-colors text-xs font-bold uppercase tracking-widest">Twitter</a>
+                <a href="#" class="text-gray-500 hover:text-[#FFD700] transition-colors text-xs font-bold uppercase tracking-widest">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                // Blur and Dark Background added here
+                navbar.classList.add('bg-[#0b0b0b]/80', 'backdrop-blur-xl', 'py-4', 'border-b', 'border-white/5');
+                navbar.classList.remove('py-6');
+            } else {
+                // Back to Transparent
+                navbar.classList.remove('bg-[#0b0b0b]/80', 'backdrop-blur-xl', 'py-4', 'border-b', 'border-white/5');
+                navbar.classList.add('py-6');
+            }
+        });
+
+        function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+        window.onload = function() {
+        const currentUser = localStorage.getItem("currentUser");
+        const navRight = document.querySelector('.flex.items-center.gap-4');
+        
+        if (currentUser && navRight) {
+            navRight.innerHTML = `
+                <div class="flex items-center gap-3 bg-black/20 p-1 pr-4 rounded-full border border-white/5">
+        <a href="profile.html" class="flex items-center gap-2 group">
+            <div class="w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-black text-sm shadow-[0_0_15px_rgba(255,215,0,0.2)]">
+                ${currentUser.charAt(0).toUpperCase()}
+            </div>
+            <span class="text-[#FFD700] text-xs font-bold hidden md:block uppercase tracking-widest">${currentUser}</span>
+        </a>
+        <button onclick="logout()" class="ml-2 pl-4 border-l border-white/10 text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-400 transition-all">
+            LOGOUT
+        </button>
+    </div>
+            `;
+        }
+    };
+    </script>
+
+</body>
+</html>
