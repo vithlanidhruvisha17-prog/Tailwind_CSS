@@ -11,28 +11,46 @@
         ::-webkit-scrollbar-track { background: #0b0b0b; }
         ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 10px; }
         body { background-color: #000; color: white; overflow-x: hidden; font-family: 'Inter', sans-serif; }
-        .insta-card { background-color: #0b0b0b; border: 1px solid #262626; }
+        .insta-card { background-color: #0b0b0b; border: 1px solid #262626; transition: all 0.3s ease; }
         .ticker-wrap { background: rgba(38, 38, 38, 0.2); border: 1px solid #262626; border-radius: 12px; overflow: hidden; padding: 15px 0; }
         .ticker { display: flex; white-space: nowrap; width: max-content; animation: marquee 60s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .tag-red { color: #ef4444; font-weight: 900; margin-right: 8px; }
+
+        @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
     </style>
+    <script>
+        // 1. Instant Security Check (Redirects if not logged in)
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
 </head>
 <body class="bg-[#0b0b0b] text-white font-sans selection:bg-[#FFD700] selection:text-black">
 
-<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 md:px-20 py-6 bg-black/80 backdrop-blur-md">
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 md:px-20 py-6 transition-all duration-300 ease-in-out">
     <div class="flex items-center gap-2 group cursor-pointer">
         <div class="w-8 h-8 bg-[#FFD700] rounded-lg flex items-center justify-center text-black font-black text-xl shadow-[0_0_15px_rgba(255,215,0,0.3)]">C</div>
-        <span class="text-[#FFD700] text-2xl font-black tracking-tighter uppercase">CyberShield Hub</span>
+        <span class="text-[#FFD700] text-2xl font-black tracking-tighter uppercase group-hover:tracking-normal transition-all">CyberShield Hub</span>
     </div>
     <ul class="hidden md:flex items-center space-x-10">
-        <li><a href="index.html" class="text-gray-400 text-xs font-bold uppercase hover:text-white transition-colors">Home</a></li>
-        <li><a href="report.html" class="text-[#FFD700] text-xs font-bold uppercase border-b-2 border-[#FFD700] pb-1">Posts</a></li>
-        <li><a href="tutorial.html" class="text-gray-400 text-xs font-bold uppercase hover:text-white transition-colors">Tutorial</a></li>
-        <li><a href="live.html" class="text-gray-400 text-xs font-bold uppercase hover:text-white transition-colors">Live</a></li>
+        <li><a href="index.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Home</a></li>
+        <li><a href="report.html" class="text-[#FFD700] text-xs font-bold uppercase tracking-widest relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-[#FFD700]">Posts</a></li>
+        <li><a href="tutorial.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Tutorial</a></li>
+        <li><a href="live.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Live</a></li>
+        <li><a href="about.html" class="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">About</a></li>
     </ul>
-    <div id="nav-auth" class="flex items-center gap-4"></div>
+    <div class="flex items-center gap-4"> 
+    <a href="profile.html" class="flex items-center gap-3 border-2 border-yellow-400 rounded-full p-0.5">
+        <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-yellow-400">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </a>
+</div>
 </nav>
 
 <div class="max-w-7xl mx-auto flex justify-center gap-10 pt-32 px-4">
@@ -71,142 +89,351 @@
 </div>
 
 <script>
-    const API_BASE = "https://cybershield-backend-pt18.onrender.com";
-    const users = ["Cyber_Guardian", "Root_Access", "Shield_Master", "Dhruvi_17", "Hack_Stopper", "Security_Pro"];
-    const currentUser = localStorage.getItem("currentUser");
+    
+    // Fake Usernames ki list
+    const users = ["Cyber_Guardian", "Root_Access", "Shield_Master", "Dhruvi_17", "Hack_Stopper", "Security_Pro", "ZeroDay_Hunter"];
 
-    if (!localStorage.getItem("isLoggedIn")) window.location.href = "login.html";
-
-    window.onload = () => {
-        updateNavbar();
-        loadLiveHeadlines();
-        loadFullFeed();
-    };
-
-    function updateNavbar() {
-        const navRight = document.getElementById('nav-auth');
-        if (currentUser) {
-            navRight.innerHTML = `
-                <div class="flex items-center gap-3 bg-white/5 p-1 pr-4 rounded-full border border-white/10">
-                    <a href="profile.html" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-black text-xs">
-                            ${currentUser[0].toUpperCase()}
-                        </div>
-                        <span class="text-[#FFD700] text-[10px] font-bold uppercase">${currentUser}</span>
-                    </a>
-                    <button onclick="logout()" class="ml-2 pl-3 border-l border-white/10 text-[9px] text-red-500 font-black">LOGOUT</button>
-                </div>`;
+    // Niche wale script block mein jao aur window.onload ko aise likho:
+function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
         }
+window.onload = async () => {
+    // 1. Pehle Navbar Update (Head wala logic yahan shift kar do)
+    const currentUser = localStorage.getItem("currentUser");
+    const navRight = document.querySelector('.flex.items-center.gap-4');
+    
+    if (currentUser && navRight) {
+        navRight.innerHTML = `
+            <div class="flex items-center gap-3 bg-black/20 p-1 pr-4 rounded-full border border-white/5">
+            <a href="profile.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div class="w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-black text-sm">
+                    ${currentUser.charAt(0).toUpperCase()}
+                </div>
+                <span class="text-[#FFD700] text-xs font-bold uppercase tracking-widest">${currentUser}</span>
+            </a>
+                <button onclick="logout()" class="ml-4 pl-4 border-l border-white/10 text-[10px] text-red-500 font-black hover:text-red-400 transition-colors">
+                    LOGOUT
+                </button>
+            </div>
+        `;
     }
+
+    // 2. Phir Feed aur News Load karo
+    loadLiveHeadlines();
+    await loadFullFeed(); 
+};
 
     async function loadFullFeed() {
-        try {
-            const [aiRes, kaggleRes] = await Promise.all([
-                fetch(`${API_BASE}/reports`),
-                fetch(`${API_BASE}/api/reports`)
-            ]);
-            
-            const aiData = await aiRes.json();
-            const kaggleData = await kaggleRes.json();
-            
-            document.getElementById('loading-text')?.remove();
-            const feed = document.getElementById('feed-container');
-            feed.innerHTML = '';
+    try {
+        const feed = document.getElementById('feed-container');
+        const loader = document.getElementById('loading-text');
 
-            const unified = [
-                ...aiData.map(i => ({ ...i, isAI: true, date: new Date(i.createdAt || Date.now()) })),
-                ...kaggleData.map(i => ({ ...i, isAI: false, date: new Date(0) }))
-            ].sort((a, b) => b.date - a.date);
+        console.log("Fetching AI Data...");
+        const aiRes = await fetch('https://cybershield-backend-pt18.onrender.com/api/reports');
+        const aiData = await aiRes.json();
+        console.log("AI Data Received:", aiData.length);
 
-            unified.forEach(post => {
-                const randomUser = users[Math.floor(Math.random() * users.length)];
-                feed.insertAdjacentHTML('beforeend', createPost(post, randomUser));
-            });
-        } catch (err) { console.error("Feed Error:", err); }
+        console.log("Fetching Kaggle Data...");
+        const kaggleRes = await fetch('https://cybershield-backend-pt18.onrender.com/api/reports');
+        const kaggleData = await kaggleRes.json();
+        console.log("Kaggle Data Received:", kaggleData.length);
+
+        if(loader) loader.remove();
+        feed.innerHTML = '';
+
+        // Sabhi data ko ek array mein merge karo
+        const unifiedData = [
+            ...aiData.map(item => ({
+                ...item, 
+                isAI: true, 
+                sortDate: new Date(item.createdAt || Date.now()) 
+            })),
+            ...kaggleData.map(item => ({
+                text: item.text, 
+                result: `Threat Classification: ${item.label || 'Malicious Activity'}\nStatus: Verified by Global Database.`,
+                createdAt: item.createdAt || new Date(),
+                isAI: false,
+                sortDate: new Date(0) // Kaggle data ko purana maan lo taaki AI upar aaye
+            }))
+        ];
+
+        // Sorting Logic: Pehle AI posts, phir Latest Date
+        unifiedData.sort((a, b) => b.sortDate - a.sortDate);
+
+        console.log("Final Unified Data Count:", unifiedData.length);
+
+        unifiedData.forEach(post => {
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            const postHTML = createProfessionalPost(post, randomUser);
+            feed.insertAdjacentHTML('beforeend', postHTML);
+        });
+
+    } catch (err) { 
+        console.error("Feed Loading Error:", err); 
     }
+}
 
-    function createPost(data, username) {
-        const btnId = `btn-${Math.random().toString(36).substr(2, 5)}`;
-        if (username !== currentUser) setTimeout(() => checkStatus(username, btnId), 500);
+    function createProfessionalPost(data, username) {
+    const currentUser = localStorage.getItem("currentUser");
+    const imageHTML = data.image ? 
+    `<div class="w-full h-auto mb-4 overflow-hidden rounded-xl border border-zinc-800">
+        <img src="${data.image}" class="w-full object-cover">
+     </div>` : '';
 
-        return `
-        <article class="insta-card rounded-2xl overflow-hidden mb-8 border border-zinc-800 bg-[#0b0b0b]">
-            <div class="p-4 flex items-center justify-between border-b border-zinc-900">
-                <div class="flex items-center gap-3">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${username}" class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-yellow-500">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <p class="text-[12px] font-black text-white">${username}</p>
-                            ${username !== currentUser ? `<button id="${btnId}" onclick="toggleFollow('${username}', this)" class="text-[9px] font-black text-blue-500 border border-blue-500/30 px-3 py-1 rounded-full uppercase">Follow</button>` : ''}
-                        </div>
-                        <p class="text-[8px] text-zinc-500 uppercase">${data.isAI ? 'Verified Analyst' : 'Security Reporter'}</p>
+// 1. Pehle button ko ek unique ID do taaki hum usey baad mein update kar sakein
+const btnId = `follow-btn-${username}-${Math.random().toString(36).substr(2, 5)}`;
+
+const followBtnHTML = (username !== currentUser) ? 
+`<button id="${btnId}" onclick="followUser('${username}', this)" class="text-[10px] font-black text-blue-500 hover:text-white transition-colors border border-blue-500/30 px-3 py-1 rounded-full uppercase tracking-tighter">Follow</button>` : '';
+
+// 2. Button bante hi check karo backend se ki kya hum follow kar chuke hain?
+if (username !== currentUser) {
+    // 300ms ka wait taaki button DOM mein aa jaye
+    setTimeout(() => {
+        checkFollowStatus(currentUser, username, btnId);
+    }, 300); 
+}
+    return `
+    <article class="insta-card rounded-2xl overflow-hidden mb-8 border border-zinc-800 shadow-2xl bg-[#0b0b0b]">
+        <div class="p-4 flex items-center justify-between border-b border-zinc-900">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full border-2 border-yellow-500 p-0.5">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${username}" class="rounded-full bg-zinc-800">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <p class="text-[12px] font-black tracking-tight text-white">${username}</p>
+                        ${followBtnHTML}
                     </div>
+                    <p class="text-[8px] text-zinc-500 uppercase">${data.isAI ? 'Verified Analyst' : 'Security Reporter'}</p>
                 </div>
             </div>
-            <div class="p-6">
-                ${data.image ? `<img src="${data.image}" class="w-full rounded-xl mb-4 border border-zinc-800">` : ''}
-                <div class="mb-4 bg-zinc-900/30 p-4 rounded-xl border border-zinc-800/50">
-                    <p class="text-[9px] text-yellow-500 font-black mb-1">REPORTED CONTENT:</p>
-                    <p class="text-xs text-zinc-400 italic">"${data.text}"</p>
-                </div>
-                <div class="text-sm text-zinc-200 leading-relaxed border-l-2 border-yellow-500/50 pl-4 whitespace-pre-line">
-                    ${data.result || data.label || 'Malicious Activity Detected'}
-                </div>
-            </div>
-            <div class="px-6 py-4 border-t border-zinc-900 flex gap-6 text-zinc-400">
-                <button onclick="likePost('${data._id}', this)" class="flex items-center gap-2 text-xs hover:text-red-500">
-                    <i class="fa-regular fa-heart"></i> <span>${data.likes || 0}</span>
-                </button>
-                <button onclick="document.getElementById('cmt-${data._id}').classList.toggle('hidden')" class="flex items-center gap-2 text-xs hover:text-blue-500">
-                    <i class="fa-regular fa-comment"></i> Reply
-                </button>
-            </div>
-            <div id="cmt-${data._id}" class="hidden p-6 bg-black/20 border-t border-zinc-900">
-                <div class="flex gap-2">
-                    <input type="text" id="in-${data._id}" placeholder="Advice..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs">
-                    <button onclick="addComment('${data._id}')" class="bg-yellow-500 text-black px-4 py-1 rounded-lg text-[10px] font-black">SEND</button>
-                </div>
-            </div>
-        </article>`;
-    }
+            <i class="fa-solid fa-ellipsis text-zinc-600"></i>
+        </div>
 
-    async function toggleFollow(target, btn) {
-        btn.disabled = true;
-        try {
-            const res = await fetch(`${API_BASE}/api/follow`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ follower: currentUser, following: target })
-            });
-            const data = await res.json();
-            btn.innerText = data.status === 'followed' ? "FOLLOWING" : "FOLLOW";
-            btn.classList.toggle('text-blue-500', data.status !== 'followed');
-            btn.classList.toggle('text-zinc-500', data.status === 'followed');
-        } catch (e) { console.error(e); }
-        btn.disabled = false;
-    }
+        <div class="p-6">
+            ${imageHTML}
+            <div class="mb-5 bg-zinc-900/30 p-4 rounded-xl border border-zinc-800/50">
+                <p class="text-[9px] text-yellow-500 font-black mb-2 uppercase tracking-widest">Reported Content:</p>
+                <p class="text-xs text-zinc-400 leading-relaxed italic">"${data.text}"</p>
+            </div>
+            
+            <div class="text-[14px] text-zinc-200 leading-relaxed font-medium whitespace-pre-line border-l-2 border-yellow-500/50 pl-4">
+                ${data.result ? data.result : (data.label || 'Malicious Activity Detected')}
+            </div>
+        </div>
 
-    async function checkStatus(target, btnId) {
-        try {
-            const res = await fetch(`${API_BASE}/api/is-following/${currentUser}/${target}`);
-            const data = await res.json();
-            const btn = document.getElementById(btnId);
-            if (data.following && btn) {
-                btn.innerText = "FOLLOWING";
-                btn.classList.replace('text-blue-500', 'text-zinc-500');
-            }
-        } catch (e) { }
-    }
+        <div class="px-6 py-4 border-t border-zinc-900 flex items-center gap-6">
+            <button onclick="handleLike('${data._id}', this)" class="hover:text-red-500 transition-colors flex items-center gap-2 text-zinc-400 text-sm">
+                <i class="${data.likes > 0 ? 'fa-solid text-red-500' : 'fa-regular'} fa-heart"></i> 
+                <span class="text-[10px] font-bold">${data.likes || 0}</span>
+            </button>
+            
+            <button onclick="toggleCommentBox('${data._id}')" class="hover:text-blue-500 transition-colors flex items-center gap-2 text-zinc-400 text-sm">
+                <i class="fa-regular fa-comment"></i> 
+                <span class="text-[10px] font-bold">Reply</span>
+            </button>
 
+            <button onclick="handleShare(\`${data.text.replace(/`/g, "'")}\`, '${data._id}')" class="hover:text-green-500 transition-colors flex items-center gap-2 text-zinc-400 text-sm">
+                <i class="fa-solid fa-share-nodes"></i>
+                <span class="text-[10px] font-bold">Share</span>
+            </button>
+        </div>
+
+        <div id="comment-section-${data._id}" class="hidden px-6 pb-6 border-t border-zinc-900/50 bg-black/20">
+            <div class="pt-4 space-y-3 max-h-40 overflow-y-auto mb-4" id="comments-list-${data._id}">
+                ${data.comments ? data.comments.map(c => `
+                    <div class="text-[11px] bg-zinc-900/50 p-2 rounded-lg border border-zinc-800">
+                        <span class="text-yellow-500 font-bold">${c.username}:</span> 
+                        <span class="text-zinc-300">${c.text}</span>
+                    </div>
+                `).join('') : '<p class="text-[9px] text-zinc-600 italic">No advice yet...</p>'}
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="input-${data._id}" placeholder="Write security advice..." 
+                    class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-[11px] focus:outline-none focus:border-yellow-500">
+                <button onclick="postComment('${data._id}')" class="bg-yellow-500 text-black px-3 py-1 rounded-lg text-[10px] font-black hover:bg-yellow-400">SEND</button>
+            </div>
+        </div>
+    </article>`;
+}
+    // Live News (Fixing the "Same News" Problem)
     async function loadLiveHeadlines() {
         try {
-            const res = await fetch(`${API_BASE}/api/cyber-news`);
-            const data = await res.json();
-            document.getElementById('newsTicker').innerHTML = data.news.map(n => `<div class="px-10 text-xs font-bold text-zinc-400"><span class="text-red-600">● LIVE:</span> ${n}</div>`).join('');
-        } catch (e) {}
+            // Hum isme cache bust karne ke liye timestamp add karenge
+            const response = await fetch('https://cybershield-backend-pt18.onrender.com/api/cyber-news?t=' + Date.now());
+            const data = await response.json();
+            if (data.success && data.news) {
+                const ticker = document.getElementById('newsTicker');
+                ticker.innerHTML = data.news.map(item => `
+                    <div class="ticker-item px-10 text-xs font-bold text-zinc-400">
+                        <span class="text-red-600">● LIVE ALERT:</span> ${item}
+                    </div>`).join('');
+                ticker.innerHTML += ticker.innerHTML; 
+            }
+        } catch (err) { }
     }
 
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    // 1. LIKE LOGIC
+async function handleLike(postId, btn) {
+    // Agar pehle se liked hai toh rok do
+    if(btn.classList.contains('liked')) return; 
+
+    try {
+        const res = await fetch(`https://cybershield-backend-pt18.onrender.com/api/reports/${postId}/like`, { method: 'POST' });
+        const data = await res.json();
+        if(data.success) {
+            const icon = btn.querySelector('i');
+            const countSpan = btn.querySelector('span');
+            
+            icon.classList.replace('fa-regular', 'fa-solid');
+            icon.classList.add('text-red-500');
+            btn.classList.add('liked'); // Mark as liked
+            countSpan.innerText = data.likes;
+            
+            // LocalStorage mein save kar lo taaki refresh par bhi yaad rahe (Optional)
+            localStorage.setItem(`liked_${postId}`, 'true');
+        }
+    } catch (err) { console.log("Like failed"); }
+}
+
+function handleShare(text, postId) {
+    // 1. Tumhari Netlify Link
+    const shareUrl = "https://cybershildhub.netlify.app/"; 
+    
+    // 2. Text ko clean karo
+    const cleanText = text.replace(/["']/g, "").substring(0, 150);
+    
+    // 3. 🛑 IMPORTANT: shareMessage ke andar link ko 'embed' karna padega
+    const shareMessage = `🛑 *SECURITY ALERT FROM CYBERSHIELD* 🛑\n\n"${cleanText}..." \n\n⚠️ Be careful! Check full details here:\n${shareUrl}\n\n#CyberSecurity #StaySafe`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: '⚠️ CyberShield Threat Alert!',
+            text: shareMessage, // Ab isme link bhi hai!
+            url: shareUrl       // Browser support ke liye URL alag se bhi dalo
+        })
+        .then(() => console.log('Shared successfully'))
+        .catch((err) => {
+            console.log("Share failed, trying clipboard...");
+            copyToClipboard(shareMessage);
+        });
+    } else {
+        copyToClipboard(shareMessage);
+    }
+}
+// Ek alag function Clipboard ke liye taaki code saaf rahe
+function copyToClipboard(fullMessage) {
+    navigator.clipboard.writeText(fullMessage)
+        .then(() => {
+            alert("✅ Threat details copied to clipboard!\nPaste it in WhatsApp to warn others.");
+        })
+        .catch(err => {
+            alert("Manual Copy: " + fullMessage);
+        });
+}
+// 3. COMMENT LOGIC (Simple Prompt for now)
+// 1. Comment box ko dikhane ya chhupane ke liye
+function toggleCommentBox(postId) {
+    const box = document.getElementById(`comment-section-${postId}`);
+    box.classList.toggle('hidden');
+}
+
+// 2. Comment post karne ke liye
+async function postComment(postId) {
+    const input = document.getElementById(`input-${postId}`);
+    const commentText = input.value;
+    const currentUser = localStorage.getItem("currentUser") || "Anonymous";
+
+    if (!commentText) return;
+
+    try {
+        const res = await fetch(`https://cybershield-backend-pt18.onrender.com/api/reports/${postId}/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser, text: commentText })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            // Turant UI mein comment add karo bina refresh kiye
+            const list = document.getElementById(`comments-list-${postId}`);
+            const newComment = `
+                <div class="text-[11px] bg-zinc-900/50 p-2 rounded-lg border border-zinc-800 animate-fade-in">
+                    <span class="text-yellow-500 font-bold">${currentUser}:</span> 
+                    <span class="text-zinc-300">${commentText}</span>
+                </div>`;
+            
+            // "No advice yet" text hatao agar pehla comment hai
+            if (list.innerHTML.includes('No advice yet')) list.innerHTML = '';
+            
+            list.insertAdjacentHTML('beforeend', newComment);
+            input.value = ''; // Input clear karo
+        }
+    } catch (err) { alert("Error posting comment"); }
+}
+
+// Sirf script wala part update kar raha hoon
+async function followUser(targetUser, btn) {
+    const currentUser = localStorage.getItem("currentUser");
+    if (!currentUser) return alert("Please login first!");
+
+    // Button state update
+    const originalText = btn.innerText;
+    btn.innerText = "WAIT...";
+    btn.disabled = true;
+
+    try {
+        console.log(`Attempting to follow: ${targetUser} from ${currentUser}`);
+        
+        const response = await fetch('https://cybershield-backend-pt18.onrender.com/api/follow', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors', // Manual CORS mode add kiya
+            body: JSON.stringify({ 
+                follower: currentUser, 
+                following: targetUser 
+            })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            btn.innerText = "FOLLOWING";
+            btn.classList.replace('text-blue-500', 'text-zinc-500');
+            btn.classList.remove('border-blue-500/30');
+            console.log("Follow success:", data);
+        } else {
+            throw new Error(data.message || "Follow failed");
+        }
+    } catch (err) {
+        console.error("Follow Error:", err);
+        btn.innerText = originalText;
+        btn.disabled = false;
+        alert("Action failed! Console check karo.");
+    }
+}
+
+async function checkFollowStatus(follower, following, btnId) {
+    try {
+        const res = await fetch(`https://cybershield-backend-pt18.onrender.com/api/is-following/${follower}/${following}`);
+        const data = await res.json();
+        
+        if (data.following) {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.innerText = "FOLLOWING";
+                btn.classList.replace('text-blue-500', 'text-zinc-500');
+                btn.classList.remove('border-blue-500/30');
+                btn.disabled = true;
+            }
+        }
+    } catch (e) { console.log("Status check failed"); }
+}
 </script>
 </body>
 </html>
