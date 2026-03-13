@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 // Follow Model Import (Fixed Path)
-const Follow = require("./models/Follow");
+const Follow = require("./Follow");
 /* ---------------- AI ANALYSIS ROUTES ---------------- */
 
 // 1. Text Analysis
