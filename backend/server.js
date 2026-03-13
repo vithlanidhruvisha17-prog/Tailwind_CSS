@@ -11,6 +11,8 @@ const path = require('path');
 const app = express();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+app.use(cors());
+
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -43,8 +45,7 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 // Follow Model Import (Fixed Path)
-const Follow = require(path.join(__dirname, 'models', 'Follow'));
-
+const Follow = require("./models/Follow");
 /* ---------------- AI ANALYSIS ROUTES ---------------- */
 
 // 1. Text Analysis

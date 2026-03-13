@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Ye schema database mein "kaun kisko follow kar raha hai" save karega
-const followSchema = new mongoose.Schema({
-    follower: { type: String, required: true }, // Jo button dabayega
-    following: { type: String, required: true }  // Jiski profile hai
+const FollowSchema = new mongoose.Schema({
+    follower: { type: String, required: true },
+    following: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Follow', followSchema);
+module.exports = mongoose.model("Follow", FollowSchema);
