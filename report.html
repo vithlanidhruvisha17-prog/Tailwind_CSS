@@ -124,28 +124,34 @@ window.onload = async () => {
     await loadFullFeed(); 
 };
 
-   async function loadFullFeed() {
+    async function loadFullFeed() {
     try {
         const feed = document.getElementById('feed-container');
         const loader = document.getElementById('loading-text');
 
-        // AB DHAYAN SE: Sirf ek hi request bhejo jo server.js ke /api/reports se connect ho
         const response = await fetch('https://cybershield-backend-pt18.onrender.com/api/reports');
+        if (!response.ok) throw new Error("Backend se data nahi mila");
+        
         const data = await response.json();
 
         if(loader) loader.remove();
         feed.innerHTML = '';
 
-        // Data ko filter ya sort karo agar zaroorat ho
+        if (data.length === 0) {
+            feed.innerHTML = '<p class="text-center text-zinc-500">No reports found yet.</p>';
+            return;
+        }
+
         data.forEach(post => {
-            const randomUser = users[Math.floor(Math.random() * users.length)];
-            const postHTML = createProfessionalPost(post, randomUser);
+            // YAHAN BADLAV HAI: randomUser ki jagah post.username use karo
+            // Agar post mein username nahi hai, toh 'Anonymous' dikhao
+            const actualUser = post.username || "Anonymous_Agent"; 
+            const postHTML = createProfessionalPost(post, actualUser);
             feed.insertAdjacentHTML('beforeend', postHTML);
         });
 
     } catch (err) { 
-        console.error("Feed Error:", err); 
-        if(loader) loader.innerText = "Error loading feed. Check Console.";
+        console.error("Critical Feed Error:", err);
     }
 }
 

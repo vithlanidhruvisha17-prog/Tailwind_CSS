@@ -91,63 +91,77 @@
 </div>
 
 <script>
-    // 1. Security Check
+    // 1. Security Check (Aapka logic)
     if (localStorage.getItem("isLoggedIn") !== "true") {
         window.location.href = "login.html";
     }
 
     const API_URL = 'https://cybershield-backend-pt18.onrender.com';
 
+    // 2. Profile Data & History Fetch Logic (Updated)
     async function updateProfileData() {
     const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) return;
 
     try {
-        // Asli API call (Make sure URL is correct)
-        const res = await fetch(`https://cybershield-backend-pt18.onrender.com/api/followers/${currentUser}`);
-        
-        if (!res.ok) {
-            throw new Error("API not found");
+        console.log("Fetching for user:", currentUser);
+
+        // 1. Social Data (Followers/Following)
+        const resSocial = await fetch(`${API_URL}/api/followers/${currentUser}`);
+        if (resSocial.ok) {
+            const dataSocial = await resSocial.json();
+            document.getElementById('followers-count').innerText = dataSocial.followersCount ?? 0;
+            document.getElementById('following-count').innerText = dataSocial.followingCount ?? 0;
         }
 
-        const data = await res.json();
+        // 2. Reports Count
+        const resReportsCount = await fetch(`${API_URL}/api/user-reports-count/${currentUser}`);
+        if (resReportsCount.ok) {
+            const dataReports = await resReportsCount.json();
+            document.getElementById('reports-count').innerText = dataReports.count ?? 0;
+        }
         
-        // Agar data mil gaya, toh UI update karo
+        // 3. Reports History (Jo aapko grid mein chahiye)
+        const resHistory = await fetch(`${API_URL}/api/user-reports/${currentUser}`);
+        if (resHistory.ok) {
+            const dataHistory = await resHistory.json();
+            console.log("Reports found:", dataHistory);
+            loadMyHistory(dataHistory);
+        }
+
+        // Username update
         document.getElementById('profile-username').innerText = currentUser;
-        document.getElementById('followers-count').innerText = data.followersCount || 0;
-        document.getElementById('following-count').innerText = data.followingCount || 0;
         
     } catch (err) {
-        console.error("Fetch Error:", err);
-        // Error aane par "Loading..." hata kar username dikhao
-        document.getElementById('profile-username').innerText = currentUser;
-        document.getElementById('followers-count').innerText = "0";
-        document.getElementById('following-count').innerText = "0";
+        console.error("Critical Fetch Error:", err);
     }
 }
 
     function loadMyHistory(reports) {
-        const grid = document.getElementById('personal-grid');
-        if(reports.length > 0) {
-            grid.innerHTML = reports.map(post => `
-                <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-5 text-left transition hover:border-yellow-400/30">
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-[9px] text-yellow-500 font-black uppercase tracking-widest bg-yellow-400/10 px-2 py-1 rounded">Analysis Log</span>
-                        <span class="text-[9px] text-zinc-600">${new Date().toLocaleDateString()}</span>
-                    </div>
-                    <p class="text-[11px] text-zinc-400 mb-2 italic">"${post.text.substring(0, 100)}${post.text.length > 100 ? '...' : ''}"</p>
-                    <p class="text-xs text-zinc-200 border-l border-yellow-400/50 pl-3">${post.result || "No detailed result"}</p>
+    const grid = document.getElementById('personal-grid');
+    if(reports && reports.length > 0) {
+        grid.innerHTML = reports.map(post => `
+            <div class="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-5 text-left transition hover:border-yellow-400/30 mb-4 shadow-lg">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-[9px] text-yellow-500 font-black uppercase tracking-widest bg-yellow-400/10 px-2 py-1 rounded">Analysis Log</span>
+                    <span class="text-[9px] text-zinc-600">${new Date(post.createdAt).toLocaleString()}</span>
                 </div>
-            `).join('');
-            grid.classList.remove('italic', 'text-center');
-        }
+                <p class="text-[11px] text-zinc-400 mb-2 italic">"${post.text ? post.text.substring(0, 80) : 'Evidence Uploaded'}..."</p>
+                <div class="text-xs text-zinc-200 border-l-2 border-yellow-400/50 pl-3 leading-relaxed">
+                    ${post.result ? post.result.replace(/\*\*/g, '').substring(0, 150) : "No result available"}...
+                </div>
+            </div>
+        `).join('');
+        grid.classList.remove('italic', 'text-center');
+    } else {
+        grid.innerHTML = "<div class='py-10 text-zinc-500'>No reports found in your database.</div>";
     }
-
+}
+    // 4. Initial Load (Aapka Logic)
     window.onload = function() {
         const currentUser = localStorage.getItem("currentUser");
         const navRight = document.getElementById('nav-auth-section');
 
-        // Setup Navbar
         if (currentUser && navRight) {
             navRight.innerHTML = `
                 <div class="flex items-center gap-3 bg-black/20 p-1 pr-4 rounded-full border border-white/5">
@@ -159,7 +173,6 @@
                 </div>
             `;
         }
-
         updateProfileData();
     };
 
@@ -168,13 +181,14 @@
         window.location.href = "login.html";
     }
 
-    // OCR Logic
+    // 5. OCR Logic (Aapka Pure Logic)
     document.getElementById('fileInput').addEventListener('change', async function() {
         const textArea = document.getElementById('user-attack-input');
         if (this.files.length === 0) return;
 
         const formData = new FormData();
         formData.append('image', this.files[0]);
+        formData.append('username', localStorage.getItem("currentUser"));
 
         textArea.value = "AI is reading the screenshot... 🔍";
         textArea.classList.add('scanning-text');
@@ -186,7 +200,7 @@
             });
             const data = await response.json();
             if (data.success) {
-                textArea.value = data.extractedText;
+                textArea.value = data.result || "Text extracted successfully!";
             }
         } catch (error) {
             alert("OCR Server Error!");
@@ -195,7 +209,7 @@
         }
     });
 
-    // Analysis Logic
+    // 6. Analysis Logic (Aapka Pure Logic)
     document.getElementById('submit-profile-post').addEventListener('click', async function() {
         const text = document.getElementById('user-attack-input').value;
         const btn = this;
@@ -210,7 +224,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     text: text,
-                    author: localStorage.getItem("currentUser") // Author bhej rahe hain stats ke liye
+                    username: localStorage.getItem("currentUser")
                 })
             });
             const data = await response.json();
@@ -226,7 +240,7 @@
         }
     });
 
-    // Navbar scroll effect
+    // 7. Navbar scroll effect (Aapka Logic)
     window.addEventListener('scroll', function() {
         const navbar = document.getElementById('navbar');
         if (window.scrollY > 50) {

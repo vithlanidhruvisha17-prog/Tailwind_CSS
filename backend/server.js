@@ -6,12 +6,9 @@ const axios = require("axios");
 const Groq = require("groq-sdk");
 const fileUpload = require("express-fileupload");
 const Tesseract = require("tesseract.js");
-const path = require('path');
 
 const app = express();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-app.use(cors());
 
 // Middleware
 app.use(express.json());
@@ -28,7 +25,8 @@ const ReportSchema = new mongoose.Schema({
     text: String,
     image: String,
     result: String,
-    label: String, 
+    label: String,
+    username: { type: String, default: "Anonymous" },
     likes: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     comments: [{ username: String, text: String, date: { type: Date, default: Date.now } }]
@@ -44,13 +42,13 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", UserSchema);
 
-// Follow Model Import (Fixed Path)
-const Follow = require("./Follow");
+const Follow = require("./models/Follow");
+
 /* ---------------- AI ANALYSIS ROUTES ---------------- */
 
-// 1. Text Analysis
+// 1. Text Analysis & Auto-Post
 app.post("/analyze", async (req, res) => {
-    const { text } = req.body;
+    const { text, username } = req.body;
     if (!text) return res.status(400).json({ error: "Text required" });
 
     try {
@@ -63,18 +61,19 @@ app.post("/analyze", async (req, res) => {
         });
 
         const aiText = chatCompletion.choices[0]?.message?.content || "Analysis Failed";
-        await Report.create({ text, result: aiText });
+        await Report.create({ text, result: aiText, username: username || "Anonymous" });
         res.json({ success: true, result: aiText });
     } catch (error) {
         res.status(500).json({ success: false, message: "AI Busy" });
     }
 });
 
-// 2. Image OCR Analysis
+// 2. Image OCR & AI Analysis
 app.post("/api/analyze-image", async (req, res) => {
     if (!req.files || !req.files.image) return res.status(400).json({ error: "No image" });
 
     const imageFile = req.files.image;
+    const username = req.body.username; 
     const base64Image = `data:${imageFile.mimetype};base64,${imageFile.data.toString('base64')}`;
 
     try {
@@ -88,23 +87,44 @@ app.post("/api/analyze-image", async (req, res) => {
         });
 
         const aiText = chatCompletion.choices[0]?.message?.content || "Analysis Failed";
-        await Report.create({ text, image: base64Image, result: aiText });
+        await Report.create({ text, image: base64Image, result: aiText, username: username || "Anonymous" });
         res.json({ success: true, result: aiText });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-/* ---------------- FEED & SOCIAL ROUTES ---------------- */
+/* ---------------- FEED & SOCIAL SYSTEM ---------------- */
 
+// Main Feed
 app.get('/api/reports', async (req, res) => {
     try {
-        // Fetching both Kaggle data and AI Reports
         const reports = await Report.find().sort({ createdAt: -1 }).limit(100);
         res.json(reports);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Profile Grid (User specific history - Case Insensitive)
+app.get('/api/user-reports/:username', async (req, res) => {
+    try {
+        const reports = await Report.find({ 
+            username: { $regex: new RegExp("^" + req.params.username + "$", "i") } 
+        }).sort({ createdAt: -1 });
+        res.json(reports);
+    } catch (err) { res.status(500).json({ error: "Could not fetch user history" }); }
+});
+
+// Stats Count (Reports count for profile)
+app.get('/api/user-reports-count/:username', async (req, res) => {
+    try {
+        const count = await Report.countDocuments({ 
+            username: { $regex: new RegExp("^" + req.params.username + "$", "i") } 
+        });
+        res.json({ count });
+    } catch (err) { res.status(500).json({ error: "DB error" }); }
+});
+
+// Engagement (Likes & Comments)
 app.post("/api/reports/:id/like", async (req, res) => {
     try {
         const report = await Report.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
@@ -122,19 +142,14 @@ app.post("/api/reports/:id/comment", async (req, res) => {
 
 /* ---------------- FOLLOW SYSTEM ---------------- */
 
-app.post('/api/follow', async (req, res) => {
+app.post("/api/follow", async (req, res) => {
+    const { follower, following } = req.body;
     try {
-        const { follower, following } = req.body;
-        if (follower === following) return res.status(400).json({ error: "Self-follow not allowed" });
-
-        const existing = await Follow.findOne({ follower, following });
-        if (existing) {
-            await Follow.deleteOne({ follower, following });
-            return res.json({ success: true, status: 'unfollowed' });
-        } 
+        const existingFollow = await Follow.findOne({ follower, following });
+        if (existingFollow) return res.status(400).json({ message: "Already following." });
         await new Follow({ follower, following }).save();
-        res.json({ success: true, status: 'followed' });
-    } catch (err) { res.status(500).json({ error: "Follow error" }); }
+        res.status(200).json({ message: "Followed successfully!" });
+    } catch (err) { res.status(500).json({ error: "Server error" }); }
 });
 
 app.get('/api/is-following/:follower/:following', async (req, res) => {
@@ -152,7 +167,7 @@ app.get('/api/followers/:username', async (req, res) => {
     } catch (err) { res.status(500).json({ error: "DB error" }); }
 });
 
-/* ---------------- AUTH & NEWS ---------------- */
+/* ---------------- AUTH & UTILS ---------------- */
 
 app.post("/api/signup", async (req, res) => {
     try {
